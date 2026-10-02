@@ -132,7 +132,7 @@ export const schemaTypes = [
   trustedBy,
   
   textSection,
-  textSectionFied,
+  textSectionField,
   tabsSection,
   tabsSectionField,
 ]

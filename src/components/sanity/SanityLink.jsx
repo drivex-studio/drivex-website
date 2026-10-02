@@ -169,7 +169,7 @@ export function SanityLink(props) {
 
   const target = link.openInNewTab ? '_blank' : undefined
   const rel = link.openInNewTab ? 'noopener noreferrer' : undefined
-  const download = link.canDownload ? '' : undefined
+  const download = link.canDownload && link.type === 'external' ? '' : undefined
 
   return (
     <Link href={link.href} target={target} rel={rel} download={download} {...rest}>

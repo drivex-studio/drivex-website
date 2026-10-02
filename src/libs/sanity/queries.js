@@ -2,7 +2,10 @@
 const LINK_PROJECTION = `{
   "type": type,
   "href": select(
-    type == "internal" => "/" + coalesce(internal.link->uri.current, internal.link->slug.current, ""),
+    type == "internal" => select(
+      string::startsWith(coalesce(internal.link->uri.current, ""), "/") => internal.link->uri.current,
+      "/" + coalesce(internal.link->uri.current, internal.link->slug.current, "")
+    ),
     type == "external" => external,
     type == "email" => "mailto:" + email,
     type == "modal" => "#"
