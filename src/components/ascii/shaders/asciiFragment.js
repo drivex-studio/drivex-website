@@ -229,6 +229,6 @@ void mainImage(const in vec4 inputColor, const in vec2 uv, out vec4 outputColor)
       return;
     }
 
-    outputColor = vec4(finalColor * finalAlpha, finalAlpha);
+outputColor = vec4(finalColor * finalAlpha, finalAlpha);
 }
-\`;
+`;

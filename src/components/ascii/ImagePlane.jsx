@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { useThree } from "@react-three/fiber";
 import { TextureLoader } from "three";
 
-import { getProxyImageUrl } from "@/utils/getProxyImageUrl";
+import { getProxyImageUrl } from "@/components/ascii/utils/proxyImage";
 
 export function ImagePlane({
   imageSrc,

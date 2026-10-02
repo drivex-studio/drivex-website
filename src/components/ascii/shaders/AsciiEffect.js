@@ -15,7 +15,7 @@ import {
   decrementTextureCount,
   registerAsciiAtlas,
   unregisterAsciiAtlas
-} from "@components/ascii/debugs/asciiDebug";
+} from "@/components/ascii/debugs/asciiDebug";
 
 export class AsciiEffect extends Effect {
   charactersTexture = null;

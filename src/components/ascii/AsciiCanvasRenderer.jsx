@@ -8,7 +8,7 @@ import React, {
 
 import { Canvas } from "@react-three/fiber";
 
-import { useIsTouchDevice } from "@/hooks/useIsTouchDevice";
+import { useIsTouchDevice } from "@/hooks/useBreakpoint";
 
 import { HoverImagePlane } from "@/components/ascii/HoverImagePlane";
 import { AsciiEffectPass } from "@/components/ascii/AsciiEffectPass";
