@@ -35,6 +35,16 @@ export const pageByUriQuery = groq`*[_type == "page" && uri.current in [$uri, $s
           ...,
           "appRichText": appRichText${RICH_TEXT}
         }
+      },
+
+      _type == "tabsSectionField" => {
+        sectionContent{
+          ...,
+          items[]{
+            ...,
+            "text": text${RICH_TEXT}
+          }
+        }
       }
     }
   }
