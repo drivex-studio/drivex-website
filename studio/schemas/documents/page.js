@@ -38,6 +38,9 @@ export default defineType({
             { type: 'indexedGridSectionField' },
             { type: 'accordionSectionField' },
             { type: 'columnLayoutSectionField' },
+
+            { type: 'textSectionField' },
+            { type: 'tabsSectionField' },
           ],
         }),
       ],

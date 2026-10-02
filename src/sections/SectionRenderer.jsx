@@ -8,6 +8,7 @@ import { CardsSection } from '@/sections/homepage/CardsSection'
 // import { ColumnLayoutSection } from '@/sections/homepage/ColumnLayoutSection'
 
 import { TextSection } from '@/sections/TextSection'
+import { TabsSection } from '@/sections/TabsSection'
 
 const sectionMap = {
   heroSectionField: HeroSection,
@@ -20,6 +21,7 @@ const sectionMap = {
   // columnLayoutSectionField: ColumnLayoutSection,
   
   textSectionField: TextSection,
+  tabsSectionField: TabsSection,
 }
 
 export function SectionRenderer({ sections }) {

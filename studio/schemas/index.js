@@ -64,6 +64,11 @@ import textCard from './objects/textCard'
 import textItem from './objects/textItem'
 import trustedBy from './objects/trustedBy'
 
+import textSection from './objects/textSection'
+import textSectionField from './objects/textSectionField'
+import tabsSection from './objects/tabsSection'
+import tabsSectionField from './objects/tabsSectionField'
+
 export const schemaTypes = [
   // Documents
   award,
@@ -125,4 +130,9 @@ export const schemaTypes = [
   textCard,
   textItem,
   trustedBy,
+  
+  textSection,
+  textSectionFied,
+  tabsSection,
+  tabsSectionField,
 ]
