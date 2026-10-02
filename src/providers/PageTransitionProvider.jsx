@@ -108,13 +108,16 @@ export function PageTransitionProvider({ children }) {
     return () => {
       window.removeEventListener("popstate", handlePopstate)
     }
-  }, [handleExit])
+  }, [])
 
-  useEffect(() => {
+    useEffect(() => {
     return () => {
-      clearTransitionTimeout()
+      if (timerRef.current) {
+        clearTimeout(timerRef.current)
+        timerRef.current = null
+      }
     }
-  }, [clearTransitionTimeout])
+  }, [])
 
   const contextValue = {
     phase,

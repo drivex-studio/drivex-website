@@ -39,7 +39,7 @@ const RICH_TEXT_PROJECTION = `{
   ...,
   markDefs[]{
     ...,
-    _type == "linkField" => ${LINK_PROJECTION}
+    _type in ["linkField", "link"] => ${LINK_PROJECTION}
   }
 }`
 
