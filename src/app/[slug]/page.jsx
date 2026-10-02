@@ -3,13 +3,13 @@ import { sanityFetch } from '@/libs/sanity/live'
 import { pageByUriQuery } from '@/libs/sanity/queries/page'
 import { SectionRenderer } from '@/sections/SectionRenderer'
 
-// The Studio stores the slug WITH the leading slash ("/privacy-policy").
-const PARAMS = { uri: '/privacy-policy' }
+const toParams = (slug) => ({ uri: `/${slug}`, slug })
 
-export async function generateMetadata() {
+export async function generateMetadata({ params }) {
+  const { slug } = await params
   const { data: page } = await sanityFetch({
     query: pageByUriQuery,
-    params: PARAMS,
+    params: toParams(slug),
     stega: false,
   })
 
@@ -22,10 +22,11 @@ export async function generateMetadata() {
   }
 }
 
-export default async function PrivacyPolicyPage() {
+export default async function SlugPage({ params }) {
+  const { slug } = await params
   const { data: page } = await sanityFetch({
     query: pageByUriQuery,
-    params: PARAMS,
+    params: toParams(slug),
   })
 
   if (!page) notFound()
