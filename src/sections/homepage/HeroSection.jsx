@@ -2,9 +2,30 @@ import { cx } from '@/libs/utils/className'
 import { HeroSectionContent } from '@/sections/contents/HeroSectionContent'
 import { HeroAsciiArt } from '@/sections/shared/HeroAsciiArt'
 import { HeroScrollPush } from '@/sections/shared/HeroScrollPush'
+import { HeroTextOnly } from '@/sections/shared/HeroTextOnly'
 
 const PADDING_TOP = { none: 'pt-0' }
 const PADDING_BOTTOM = { none: 'pb-0' }
+
+const TEXT_ONLY_PT = {
+  none: 'pt-0',
+  sm: 'pt-24 lg:pt-48',
+  md: 'pt-32 lg:pt-64',
+  lg: 'pt-48 lg:pt-96',
+  xl: 'pt-64 lg:pt-128',
+  '2xl': 'pt-80 lg:pt-160',
+  '3xl': 'pt-96 lg:pt-192',
+}
+
+const TEXT_ONLY_PB = {
+  none: 'pb-0',
+  sm: 'pb-24 lg:pb-48',
+  md: 'pb-32 lg:pb-64',
+  lg: 'pb-48 lg:pb-96',
+  xl: 'pb-64 lg:pb-128',
+  '2xl': 'pb-80 lg:pb-160',
+  '3xl': 'pb-96 lg:pb-192',
+}
 
 export function HeroSection({ content }) {
   if (!content) return null
@@ -30,6 +51,27 @@ export function HeroSection({ content }) {
     asciiRevealOriginY,
     parallaxIntensity,
   } = content
+
+  if (variant === 'textOnly') {
+    return (
+      <section
+        data-theme={theme}
+        data-page-builder-section="heroSection"
+        className={cx(
+          'relative bg-background',
+          TEXT_ONLY_PT[paddingTop] ?? TEXT_ONLY_PT.xl,
+          TEXT_ONLY_PB[paddingBottom] ?? TEXT_ONLY_PB.sm
+        )}
+      >
+        <HeroTextOnly
+          headline={headline?.text}
+          headlineLevel={headline?.level}
+          headlineDisplay={headlineDisplay}
+          subtext={subtext}
+        />
+      </section>
+    )
+  }
 
   const asciiSrc = asciiImageUrl ?? asciiOriginalImageUrl
   const showAscii = variant === 'ascii' && Boolean(asciiSrc)

@@ -41,6 +41,7 @@ export default defineType({
 
             { type: 'textSectionField' },
             { type: 'tabsSectionField' },
+            { type: 'workSliderSectionField' },
           ],
         }),
       ],

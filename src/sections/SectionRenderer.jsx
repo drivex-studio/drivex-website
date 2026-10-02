@@ -9,6 +9,7 @@ import { CardsSection } from '@/sections/homepage/CardsSection'
 
 import { TextSection } from '@/sections/TextSection'
 import { TabsSection } from '@/sections/TabsSection'
+import { WorkSliderSection } from '@/sections/workpage/WorkSliderSection'
 
 const sectionMap = {
   heroSectionField: HeroSection,
@@ -19,9 +20,10 @@ const sectionMap = {
   // indexedGridSectionField: IndexedGridSection,
   // accordionSectionField: AccordionSection,
   // columnLayoutSectionField: ColumnLayoutSection,
-  
+
   textSectionField: TextSection,
   tabsSectionField: TabsSection,
+  workSliderSectionField: WorkSliderSection,
 }
 
 export function SectionRenderer({ sections }) {
