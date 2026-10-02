@@ -1,9 +1,11 @@
 import { defineField, defineType } from 'sanity'
+import {HelpCircleIcon} from '@sanity/icons/HelpCircle'
 
 export default defineType({
   name: 'notFound',
   title: 'Not Found Page',
   type: 'document',
+  icon: HelpCircleIcon,
   fields: [
     defineField({
       name: 'title',

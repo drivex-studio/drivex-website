@@ -53,6 +53,33 @@ const CASE_STUDY = groq`{
   mainImage{ type, highResolution, externalVideoUrl, "image": image${IMAGE} }
 }`
 
+// Shape expected by FeaturedWorkSectionClient: featuredMedia (16/10 card),
+// thumbnail (side nav), tags, and a uri that always starts with "/".
+// Keeps the image asset reference so SanityImage can build URLs.
+const FEATURED_CASE_STUDY = groq`{
+  _id,
+  title,
+  "uri": select(
+    string::startsWith(coalesce(uri.current, ""), "/") => uri.current,
+    "/" + uri.current
+  ),
+  tags,
+  "featuredMedia": mainImage{
+    ...,
+    "type": coalesce(type, "image"),
+    image{
+      ...,
+      "lqip": asset->metadata.lqip,
+      "dimensions": asset->metadata.dimensions
+    }
+  },
+  "thumbnail": mainImage.image{
+    ...,
+    "lqip": asset->metadata.lqip,
+    "dimensions": asset->metadata.dimensions
+  }
+}`
+
 const TRUSTED_BY = groq`{
   title,
   items[]{ _key, _type, alt, svgCode, variant, text }
@@ -105,14 +132,21 @@ export const homepageQuery = groq`*[_type == "page" && _id == $id][0]{
       _type == "animatedListSectionField" => {
         sectionContent{
           ...,
-          items[]{ ..., "image": image${IMAGE} }
+          items[]{
+            ...,
+            image{
+              ...,
+              "lqip": asset->metadata.lqip,
+              "dimensions": asset->metadata.dimensions
+            }
+          }
         }
       },
 
       _type == "featuredWorkSectionField" => {
         sectionContent{
           ...,
-          caseStudies[]->${CASE_STUDY},
+          caseStudies[]->${FEATURED_CASE_STUDY},
           "viewAllButton": viewAllButton${BUTTON}
         }
       },
@@ -138,7 +172,17 @@ export const homepageQuery = groq`*[_type == "page" && _id == $id][0]{
             ...,
             components[]{
               ...,
-              _type == "imageComponent" => { "image": image{ ..., "image": image${IMAGE} } },
+              _type == "imageComponent" => {
+                "image": image{
+                  ...,
+                  "type": coalesce(type, "image"),
+                  image{
+                    ...,
+                    "lqip": asset->metadata.lqip,
+                    "dimensions": asset->metadata.dimensions
+                  }
+                }
+              },
               _type == "textComponent" => { "text": text${RICH_TEXT} },
               _type == "buttonComponent" => { "button": button${BUTTON} },
               _type == "buttonGroupComponent" => {

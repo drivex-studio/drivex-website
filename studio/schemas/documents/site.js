@@ -1,7 +1,6 @@
 import {defineField, defineType} from 'sanity'
 import {CogIcon} from '@sanity/icons/Cog'
 
-// Singleton: the content lives in the document with _id "site".
 export default defineType({
   name: 'site',
   title: 'Site Settings',

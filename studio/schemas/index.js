@@ -15,6 +15,7 @@ import promotionalPopup from './documents/promotionalPopup'
 import projectTag from './documents/projectTag' 
 import landingPage from './documents/landingPage' 
 import contactSectionDocument from './documents/contactSectionDocument' 
+import auditSubmission from './documents/auditSubmission' 
 // ============================================
 // Components (Modular UI Blocks)
 // ============================================
@@ -88,6 +89,7 @@ export const schemaTypes = [
   projectTag,
   landingPage,
   contactSectionDocument,
+  auditSubmission,
 
   // Components
   accentTextComponent,

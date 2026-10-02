@@ -1,9 +1,11 @@
 import { defineField, defineType } from 'sanity'
+import {CaseIcon} from '@sanity/icons/Case'
 
 export default defineType({
   name: 'caseStudy',
   title: 'Case Study',
   type: 'document',
+  icon: CaseIcon,
   groups: [
     { name: 'content', title: 'Content', default: true },
     { name: 'info', title: 'Project Info' },
