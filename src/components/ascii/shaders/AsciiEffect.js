@@ -12,9 +12,7 @@ import { asciiFragmentShader } from "@/components/ascii/shaders/asciiFragment";
 
 import {
   incrementTextureCount,
-  decrementTextureCount,
-  registerAsciiAtlas,
-  unregisterAsciiAtlas
+  decrementTextureCount
 } from "@/components/ascii/debugs/asciiDebug";
 
 export class AsciiEffect extends Effect {
@@ -129,10 +127,6 @@ export class AsciiEffect extends Effect {
     }
 
     if (this.charactersTexture) {
-      unregisterAsciiAtlas(
-        this.charactersTexture.image ?? null
-      );
-
       this.charactersTexture.dispose();
       this.charactersTexture = null;
 
@@ -177,84 +171,59 @@ export class AsciiEffect extends Effect {
   }
 
   createCharactersTexture(characters, fontSize) {
-    if (typeof document === "undefined") {
-      throw new Error(
-        "AsciiEffect requires a browser document to create its atlas."
-      );
-    }
-
-    const atlasSize = 1024;
-    const columns = 16;
-    const cellSize = 64;
-
     const canvas = document.createElement("canvas");
-    canvas.width = atlasSize;
-    canvas.height = atlasSize;
+    canvas.width = canvas.height = 1024;
 
-    const texture = new CanvasTexture(canvas);
-
-    texture.wrapS = RepeatWrapping;
-    texture.wrapT = RepeatWrapping;
-    texture.minFilter = NearestFilter;
-    texture.magFilter = NearestFilter;
-    texture.generateMipmaps = false;
+    const texture = new CanvasTexture(
+      canvas,
+      undefined,
+      RepeatWrapping,
+      RepeatWrapping,
+      NearestFilter,
+      NearestFilter
+    );
 
     const context = canvas.getContext("2d");
 
     if (!context) {
-      texture.dispose();
-      throw new Error("Context not available");
+      throw Error("Context not available");
     }
 
-    const fontStyle =
-      `${fontSize}px ` +
-      `"Cascadia Mono", "SF Mono", Menlo, Consolas, ` +
-      `"Liberation Mono", monospace`;
+    const font = `${fontSize}px "Cascadia Mono", "SF Mono", Menlo, Consolas, "Liberation Mono", monospace`;
 
-    const renderCharacters = () => {
-      context.clearRect(0, 0, atlasSize, atlasSize);
-
-      context.font = fontStyle;
+    const draw = () => {
+      context.clearRect(0, 0, 1024, 1024);
+      context.font = font;
       context.textAlign = "center";
       context.textBaseline = "middle";
       context.fillStyle = "#fff";
 
       for (let index = 0; index < characters.length; index++) {
         const character = characters[index];
+        const column = index % 16;
+        const row = Math.floor(index / 16);
 
-        if (!character) {
-          continue;
+        if (character) {
+          context.fillText(character, 64 * column + 32, 64 * row + 32);
         }
-
-        const column = index % columns;
-        const row = Math.floor(index / columns);
-
-        context.fillText(
-          character,
-          column * cellSize + cellSize / 2,
-          row * cellSize + cellSize / 2
-        );
       }
 
       texture.needsUpdate = true;
-
-      registerAsciiAtlas(canvas, {
-        size: atlasSize,
-        cell: cellSize,
-        characters,
-        fontSize
-      });
     };
 
-    renderCharacters();
+    draw();
 
-    if (document.fonts?.load) {
+    if (typeof document !== "undefined" && document.fonts?.load) {
       document.fonts
-        .load(fontStyle)
-        .then(renderCharacters)
+        .load(font)
+        .then(() => {
+          draw();
+        })
         .catch(() => {});
 
-      setTimeout(renderCharacters, 100);
+      setTimeout(() => {
+        draw();
+      }, 100);
     }
 
     incrementTextureCount();
@@ -323,26 +292,15 @@ export class AsciiEffect extends Effect {
   }
 
   setDepthMap(texture) {
-    if (this.depthMapTexture === texture) {
-      this.setUniform("uDepthMap", texture);
-      return;
-    }
-
     if (this.depthMapTexture) {
       this.depthMapTexture.dispose();
       decrementTextureCount();
     }
 
     this.depthMapTexture = texture;
+    incrementTextureCount();
 
-    if (texture) {
-      incrementTextureCount();
-    }
-
-    this.setUniform(
-      "uDepthMap",
-      texture ?? new Texture()
-    );
+    this.setUniform("uDepthMap", texture);
   }
 
   setEnableDepthParallax(enabled) {
@@ -365,21 +323,12 @@ export class AsciiEffect extends Effect {
     this.setUniform("uImpactProgress", progress);
   }
 
-  setRadialInvert(inverted) {
-    this.setUniform(
-      "uRadialInvert",
-      typeof inverted === "boolean"
-        ? Number(inverted)
-        : inverted
-    );
+  setRadialInvert(value) {
+    this.setUniform("uRadialInvert", value);
   }
 
   setClickPoint(x, y) {
     this.setUniform("uClickPoint", { x, y });
-  }
-
-  clearClickPoint() {
-    this.setClickPoint(-1, -1);
   }
 
   setRevealOrigin(x, y) {

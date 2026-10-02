@@ -9,7 +9,7 @@ export default function TabTitleMessage() {
     function handleVisibilityChange() {
       if (document.hidden) {
         originalTitle = document.title
-        document.title = "Don't be shy, Fella. 🟩"
+        document.title = "Your chou player ? 🟧"
       } else {
         document.title = originalTitle
       }

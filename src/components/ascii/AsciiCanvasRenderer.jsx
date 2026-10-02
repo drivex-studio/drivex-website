@@ -13,9 +13,19 @@ import { useIsTouchDevice } from "@/hooks/useBreakpoint";
 import { HoverImagePlane } from "@/components/ascii/HoverImagePlane";
 import { AsciiEffectPass } from "@/components/ascii/AsciiEffectPass";
 import { DemandFrameInvalidator } from "@/components/ascii/DemandFrameInvalidator";
+import { cx } from "@/libs/utils/className";
+import { DEFAULT_CHARS } from "@/libs/constants/config";
 
-const DEFAULT_CHARS =
-  " .'`^\",:;Il!i><~+_-?][}{1)(|\\/tfjrxnuvczXYUJCLQ0OZmwqpdbkhao*#MW&8%B@$";
+const DEFAULT_REVEAL_ORIGIN = { x: 0.5, y: 0.5 };
+const DEFAULT_DPR = [1, 1.5];
+
+function handleCanvasCreated({ gl }) {
+  gl.domElement.addEventListener("webglcontextlost", preventContextLost);
+}
+
+function preventContextLost(event) {
+  return event.preventDefault();
+}
 
 export function AsciiCanvasRenderer({
   imageSrc,
@@ -73,16 +83,11 @@ export function AsciiCanvasRenderer({
   clickRadialInvert,
   impactProgress,
 
-  revealOrigin = {
-    x: 0.5,
-    y: 0.5
-  },
+  revealOrigin = DEFAULT_REVEAL_ORIGIN,
 
   frameloop = "always",
 
-  debugLabel,
-
-  dpr = [1, 1.5]
+  dpr = DEFAULT_DPR
 }) {
   const containerRef = useRef(null);
 
@@ -192,7 +197,7 @@ export function AsciiCanvasRenderer({
           Math.max(
             dpr[0],
             Math.min(
-              window.devicePixelRatio || 1,
+              window.devicePixelRatio ?? 1,
               dpr[1]
             )
           ) / 2
@@ -239,9 +244,7 @@ export function AsciiCanvasRenderer({
   return (
     <div
       ref={containerRef}
-      className={
-        `relative size-full ${className ?? ""}`
-      }
+      className={cx("relative size-full", className)}
     >
       <Canvas
         frameloop={actualFrameloop}
@@ -261,6 +264,7 @@ export function AsciiCanvasRenderer({
           background:
             "transparent"
         }}
+        onCreated={handleCanvasCreated}
       >
         <DemandFrameInvalidator
           frameloop={frameloop}
@@ -289,6 +293,8 @@ export function AsciiCanvasRenderer({
           cellSize={scaledCellSize}
           color={color}
           invert={invert}
+          respectAlpha
+          alphaThreshold={0.1}
 
           progress={progress}
           colorProgress={

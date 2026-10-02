@@ -65,6 +65,9 @@ function getOrCreateDebugOverlay(id, title) {
  * Restored version of original `fd(sourceCanvas, options)`.
  */
 export function renderAtlas(sourceCanvas, options) {
+  atlasSourceCanvas = sourceCanvas;
+  atlasOptions = options;
+
   if (
     typeof document === "undefined" ||
     !sourceCanvas ||
@@ -84,13 +87,6 @@ export function renderAtlas(sourceCanvas, options) {
     container.removeChild(container.lastChild);
   }
 
-  const titleElement = document.createElement("div");
-  titleElement.textContent = ASCII_DEBUG_OVERLAY_TITLE;
-  titleElement.style.fontWeight = "bold";
-  titleElement.style.marginBottom = "4px";
-  titleElement.style.color = "#ff6b4a";
-  container.appendChild(titleElement);
-
   const infoElement = document.createElement("div");
   infoElement.textContent =
     `size=${options.size} ` +
@@ -99,7 +95,6 @@ export function renderAtlas(sourceCanvas, options) {
     `font=${options.fontSize}px`;
 
   infoElement.style.color = "#ccc";
-  infoElement.style.marginBottom = "6px";
   container.appendChild(infoElement);
 
   const previewCanvas = document.createElement("canvas");
@@ -147,7 +142,6 @@ export function renderAtlas(sourceCanvas, options) {
   previewCanvas.style.width = `${options.size}px`;
   previewCanvas.style.height = `${options.size}px`;
   previewCanvas.style.border = "1px solid #444";
-  previewCanvas.style.display = "block";
 
   container.appendChild(previewCanvas);
 }
@@ -288,37 +282,6 @@ export function decrementTextureCount() {
       "color: #888"
     );
   }
-}
-
-/**
- * Stores the generated character-atlas canvas and its metadata.
- *
- * This assignment was outside the provided fragment, so this function
- * should be called from createCharactersTexture().
- */
-export function registerAsciiAtlas(sourceCanvas, options) {
-  atlasSourceCanvas = sourceCanvas;
-  atlasOptions = options;
-
-  if (isAsciiDebugEnabled()) {
-    renderAtlas(atlasSourceCanvas, atlasOptions);
-
-    const context = atlasSourceCanvas.getContext("2d");
-
-    if (context) {
-      logAtlasStats(context, atlasOptions);
-    }
-  }
-}
-
-export function unregisterAsciiAtlas(sourceCanvas = null) {
-  if (sourceCanvas && sourceCanvas !== atlasSourceCanvas) {
-    return;
-  }
-
-  atlasSourceCanvas = null;
-  atlasOptions = null;
-  lastStatsLog = null;
 }
 
 export const asciiDebugUtils = {

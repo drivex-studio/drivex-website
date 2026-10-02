@@ -7,11 +7,12 @@ import { TextureLoader } from "three";
 
 import { AsciiEffect } from "@/components/ascii/shaders/AsciiEffect";
 import { getProxyImageUrl } from "@/components/ascii/utils/proxyImage";
+import { DEFAULT_CHARS } from "@/libs/constants/config";
 
-
+const DEFAULT_REVEAL_ORIGIN = { x: 0.5, y: 0.5 };
 
 export function AsciiEffectPass({
-  characters = defaultChars,
+  characters = DEFAULT_CHARS,
   fontSize = 54,
   cellSize = 20,
   color = "#ff6b4a",
@@ -48,18 +49,10 @@ export function AsciiEffectPass({
   clickRadialInvert,
   impactProgress,
 
-  revealOrigin = {
-    x: 0.5,
-    y: 0.5
-  }
+  revealOrigin = DEFAULT_REVEAL_ORIGIN
 }) {
   const gooeyIntensity = useRef(0);
-
-  const parallax = useRef({
-    x: 0,
-    y: 0
-  });
-
+  const parallax = useRef({ x: 0, y: 0 });
   const hoverState = useRef(false);
   const scrambleCounter = useRef(0);
 
@@ -111,11 +104,10 @@ export function AsciiEffectPass({
   );
 
   useEffect(() => {
-    if (!depthMapSrc || !enableDepthParallax) {
-      return;
-    }
+    if (!depthMapSrc || !enableDepthParallax) return;
 
     const loader = new TextureLoader();
+    loader.setCrossOrigin("anonymous");
 
     loader.load(getProxyImageUrl(depthMapSrc), (texture) => {
       effect.setDepthMap(texture);
@@ -129,72 +121,56 @@ export function AsciiEffectPass({
 
     effect.setProgress(progress);
     effect.setColorProgress(colorProgress);
-
-    effect.setClickPoint(
-      clickPoint?.x ?? -1,
-      clickPoint?.y ?? -1
-    );
-
+    effect.setClickPoint(clickPoint?.x ?? -1, clickPoint?.y ?? -1);
     effect.setRadialInvert(+!!clickRadialInvert);
     effect.setImpactProgress(impactProgress ?? 0);
+    effect.setRevealOrigin(revealOrigin.x, revealOrigin.y);
 
-    effect.setRevealOrigin(
-      revealOrigin.x,
-      revealOrigin.y
-    );
-
-    // depth parallax
-    if (enableDepthParallax) {
-      const targetX = isHovering
-        ? -mx * parallaxIntensity
-        : 0;
-
-      const targetY = isHovering
-        ? -my * parallaxIntensity * 0.5
-        : 0;
-
-      const lerp = isHovering ? 0.08 : 0.05;
-
-      parallax.current.x +=
-        (targetX - parallax.current.x) * lerp;
-
-      parallax.current.y +=
-        (targetY - parallax.current.y) * lerp;
-
-      effect.setParallaxOffset(
-        parallax.current.x,
-        parallax.current.y
-      );
+    // keep rendering while hovering (needed for frameloop="demand")
+    if (isHovering && (enableDepthParallax || enableGooeyReveal)) {
+      state.invalidate();
     }
 
-    // gooey reveal
-    if (enableGooeyReveal) {
-      effect.setMousePosition(
-        (mx + 1) / 2,
-        (my + 1) / 2
-      );
+    if (enableDepthParallax) {
+      const targetX = isHovering ? -mx * parallaxIntensity : 0;
+      const targetY = isHovering ? -my * parallaxIntensity * 0.5 : 0;
+      const lerp = isHovering ? 0.08 : 0.05;
 
-      if (
-        isHovering &&
-        !hoverState.current
-      ) {
+      parallax.current.x += (targetX - parallax.current.x) * lerp;
+      parallax.current.y += (targetY - parallax.current.y) * lerp;
+
+      effect.setParallaxOffset(parallax.current.x, parallax.current.y);
+
+      if (!isHovering) {
+        const dx = Math.abs(targetX - parallax.current.x);
+        const dy = Math.abs(targetY - parallax.current.y);
+
+        if (dx > 1e-4 || dy > 1e-4) {
+          state.invalidate();
+        }
+      }
+    }
+
+    if (enableGooeyReveal) {
+      effect.setMousePosition((mx + 1) / 2, (my + 1) / 2);
+
+      if (isHovering && !hoverState.current) {
         scrambleCounter.current += 1;
-        effect.setScrambleSeed(
-          scrambleCounter.current
-        );
+        effect.setScrambleSeed(scrambleCounter.current);
       }
 
       hoverState.current = isHovering;
 
-      const target = Number(isHovering);
+      const target = +!!isHovering;
 
       gooeyIntensity.current +=
-        (target - gooeyIntensity.current) *
-        (isHovering ? 0.08 : 0.06);
+        (target - gooeyIntensity.current) * (isHovering ? 0.08 : 0.06);
 
-      effect.setGooeyIntensity(
-        gooeyIntensity.current
-      );
+      effect.setGooeyIntensity(gooeyIntensity.current);
+
+      if (!isHovering && Math.abs(target - gooeyIntensity.current) > 0.001) {
+        state.invalidate();
+      }
     }
   });
 
@@ -210,10 +186,9 @@ export function AsciiEffectPass({
     };
   }, [effect, effectRef]);
 
-return (
-  <EffectComposer multisampling={0}>
-    <primitive object={effect} />
-  </EffectComposer>
-);
-
+  return (
+    <EffectComposer multisampling={0}>
+      <primitive object={effect} />
+    </EffectComposer>
+  );
 }
