@@ -176,7 +176,6 @@
   }
 }
 
-/* Runtime theme colors — တန်ဖိုးကို data-theme blocks ကနေ element အလိုက် သတ်မှတ် */
 @theme inline {
   --color-brand: var(--color-brand);
   --color-background: var(--color-background);
@@ -196,9 +195,6 @@
   }
 }
 
-/* ─────────────────────────────────────────────
-   2. Scoped themes + site CSS
-   ───────────────────────────────────────────── */
 :root,
 [data-theme="light"] {
   --color-background: #eee;
@@ -872,42 +868,19 @@ body[data-transition-phase="exiting"] .page-enter-fade {
   transition: opacity 0.6s var(--ease-power2-out) 0.85s;
 }
 
-/* ─────────────────────────────────────────────
-   3. Fonts
-   ───────────────────────────────────────────── */
-:root {
-  --font-geist-mono: "geistMono", "geistMono Fallback";
-}
-
-@font-face {
-  font-family: geistMono;
-  src: url(/fonts/GeistMono[wght].woff2) format("woff2");
-  font-display: swap;
-  font-weight: 400;
-  font-style: normal;
-}
-
-@font-face {
-  font-family: geistMono;
-  src: url(/fonts/GeistMono-Medium.woff2) format("woff2");
-  font-display: swap;
-  font-weight: 500;
-  font-style: normal;
-}
-
-@font-face {
-  font-family: geistMono Fallback;
-  src: local(Arial);
-  ascent-override: 76.43%;
-  descent-override: 22.43%;
-  line-gap-override: 0%;
-  size-adjust: 131.49%;
-}
 @font-face {
   font-family: "AktivGrotesk";
   src: url(/fonts/AktivGroteskCorp-Regular.woff2) format("woff2");
   font-display: swap;
   font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "AktivGrotesk";
+  src: url(/fonts/AktivGrotesk-Medium.woff2) format("woff2");
+  font-display: swap;
+  font-weight: 500;
   font-style: normal;
 }
 
