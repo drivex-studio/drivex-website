@@ -32,7 +32,7 @@ export const metadata = {
     shortcut: '/images/favicon.ico',
     apple: '/images/apple-touch-icon.png',
   },
-    openGraph: {
+  openGraph: {
     title: "Drive X Store",
     description:
       "A trusted gaming marketplace for game accounts, items, and digital gaming products.",
@@ -54,6 +54,14 @@ export const metadata = {
     description:
       "Shop game accounts, items, and digital gaming products at Drive X Store.",
     images: ["/images/og-image.jpeg"],
+  },
+};
+
+export const viewport = {
+  formatDetection: {
+    email: false,
+    address: false,
+    telephone: false,
   },
 };
 
@@ -90,6 +98,15 @@ export default function RootLayout({ children }) {
       { '@type': 'WebPage', name: 'Contact', url: 'https://drivexstore.shop/contact' },
     ],
   };
+    const fontScript = `
+    (function () {
+      var l = document.createElement("link");
+      l.rel = "stylesheet";
+      l.href = "https://use.typekit.net/tdy7azi.css?display=swap";
+      document.head.appendChild(l);
+    })();
+  `;
+  
   const themeScript = `(function(){try{var t = localStorage.getItem('theme');if(t){document.documentElement.setAttribute('data-theme',t);}else if(window.matchMedia('(prefers-color-scheme:dark)').matches){document.documentElement.setAttribute('data-theme','dark');}else{document.documentElement.setAttribute('data-theme','light');}}catch(e){}})()`;
 
   return (
@@ -98,7 +115,10 @@ export default function RootLayout({ children }) {
         <link rel="preconnect" href="https://use.typekit.net" crossOrigin="anonymous" />
         <link rel="preconnect" href="https://p.typekit.net" crossOrigin="anonymous" />
         <link rel="preconnect" href="https://eu-assets.i.posthog.com" />
-        <link rel="stylesheet" href="https://use.typekit.net/tdy7azi.css" />
+        <script dangerouslySetInnerHTML={{ __html: fontScript }} />
+        <noscript>
+          <link rel="stylesheet" href="https://use.typekit.net/tdy7azi.css?display=swap" />
+        </noscript>
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
       </head>
       <body data-transition-phase="idle">
