@@ -31,6 +31,35 @@ const RICH_TEXT = groq`[]{
   }
 }`
 
+const LINK = groq`{
+  "text": customText,
+  type,
+  openInNewTab,
+  canDownload,
+  "href": select(
+    type == "internal" => select(
+      string::startsWith(coalesce(internal.link->uri.current, ""), "/") => internal.link->uri.current,
+      "/" + coalesce(internal.link->uri.current, internal.link->slug.current, "")
+    ),
+    type == "external" => external,
+    type == "email" => "mailto:" + email,
+    type == "modal" => "#"
+  ),
+  "modalId": select(defined(modalId._ref) => modalId->_id, modalId)
+}`
+
+const BUTTON = groq`{
+  _key, size, theme, variant,
+  "link": link${LINK}
+}`
+
+const TRUSTED_BY = groq`{
+  title,
+  items[]{ _key, _type, alt, svgCode, variant, text }
+}`
+
+// Hero: HeroSection reads mobileImage (an image object) while the Studio field is parallaxMobileImage,
+// so it is aliased inside the hero branch below. Keep backticks out of comments inside the template.
 export const pageByUriQuery = groq`*[_type == "page" && uri.current in [$uri, $slug]][0]{
   title,
   seoMetadata,
@@ -46,7 +75,109 @@ export const pageByUriQuery = groq`*[_type == "page" && uri.current in [$uri, $s
           "asciiImageUrl": asciiImage.asset->url,
           "asciiOriginalImageUrl": asciiOriginalImage.asset->url,
           "mobileImageUrl": parallaxMobileImage.asset->url,
-          "depthMapUrl": depthMap.asset->url
+          "depthMapUrl": depthMap.asset->url,
+          "mobileImage": parallaxMobileImage{
+            ...,
+            "altText": asset->altText,
+            "description": asset->description,
+            "title": asset->title,
+            "lqip": asset->metadata.lqip,
+            "dimensions": asset->metadata.dimensions
+          },
+          parallaxMedia{
+            ...,
+            image{
+              ...,
+              "altText": asset->altText,
+              "description": asset->description,
+              "title": asset->title,
+              "lqip": asset->metadata.lqip,
+              "dimensions": asset->metadata.dimensions
+            }
+          },
+          ctas{ ..., buttons[]${BUTTON} },
+          trustedBy${TRUSTED_BY}
+        }
+      },
+
+      _type == "logoSectionField" => {
+        sectionContent{ ..., trustedBy${TRUSTED_BY} }
+      },
+
+      _type == "cardsSectionField" => {
+        sectionContent{
+          ...,
+          cards[]{
+            ...,
+            _type == "mediaCard" => {
+              media{
+                ...,
+                image{
+                  ...,
+                  "lqip": asset->metadata.lqip,
+                  "dimensions": asset->metadata.dimensions
+                }
+              }
+            }
+          }
+        }
+      },
+
+      _type == "pricingSectionField" => {
+        sectionContent{
+          ...,
+          text${RICH_TEXT},
+          "spotsRemaining": *[_type == "site"][0].spotsRemaining,
+          priceCards[]{
+            ...,
+            button${BUTTON}
+          }
+        }
+      },
+
+      _type == "columnLayoutSectionField" => {
+        sectionContent{
+          ...,
+          columns[]{
+            ...,
+            components[]{
+              ...,
+              _type == "imageComponent" => {
+                "image": image{
+                  ...,
+                  "type": coalesce(type, "image"),
+                  image{
+                    ...,
+                    "altText": asset->altText,
+                    "description": asset->description,
+                    "title": asset->title,
+                    "lqip": asset->metadata.lqip,
+                    "dimensions": asset->metadata.dimensions
+                  }
+                }
+              },
+              _type == "textComponent" => { "text": text${RICH_TEXT} },
+              _type == "buttonComponent" => { "button": button${BUTTON} },
+              _type == "buttonGroupComponent" => {
+                buttonGroup{ ..., buttons[]${BUTTON} }
+              }
+            }
+          }
+        }
+      },
+
+      _type == "tableSectionField" => {
+        sectionContent{
+          ...,
+          text${RICH_TEXT},
+          button${BUTTON}
+        }
+      },
+
+      _type == "accordionSectionField" => {
+        sectionContent{
+          ...,
+          items[]{ _key, headline, "text": text${RICH_TEXT} }
         }
       },
 
@@ -58,7 +189,15 @@ export const pageByUriQuery = groq`*[_type == "page" && uri.current in [$uri, $s
             title,
             "uri": uri.current,
             tags,
-            mainImage{ type, highResolution, externalVideoUrl, "image": image${IMAGE} }
+            mainImage{
+              ...,
+              "type": coalesce(type, "image"),
+              image{
+                ...,
+                "lqip": asset->metadata.lqip,
+                "dimensions": asset->metadata.dimensions
+              }
+            }
           }
         }
       },
@@ -67,6 +206,31 @@ export const pageByUriQuery = groq`*[_type == "page" && uri.current in [$uri, $s
         sectionContent{
           ...,
           "appRichText": appRichText${RICH_TEXT}
+        }
+      },
+
+      _type == "contactSectionField" => {
+        sectionContent{
+          theme,
+          paddingTop,
+          paddingBottom,
+          "contact": contactSectionRef->{
+            headline,
+            formHeadline,
+            contactText${RICH_TEXT},
+            ctaButton${LINK},
+            "image": image{
+              type,
+              image{
+                ...,
+                "altText": asset->altText,
+                "description": asset->description,
+                "title": asset->title,
+                "lqip": asset->metadata.lqip,
+                "dimensions": asset->metadata.dimensions
+              }
+            }
+          }
         }
       },
 

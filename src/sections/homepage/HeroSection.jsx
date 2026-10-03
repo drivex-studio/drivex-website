@@ -1,6 +1,7 @@
 import { cx } from '@/libs/utils/className'
 import { HeroSectionContent } from '@/sections/contents/HeroSectionContent'
 import { HeroAsciiArt } from '@/sections/shared/HeroAsciiArt'
+import { HeroParallax } from '@/sections/shared/HeroParallax'
 import { HeroScrollPush } from '@/sections/shared/HeroScrollPush'
 import { HeroTextOnly } from '@/sections/shared/HeroTextOnly'
 
@@ -27,7 +28,7 @@ const TEXT_ONLY_PB = {
   '3xl': 'pb-96 lg:pb-192',
 }
 
-export function HeroSection({ content }) {
+export function HeroSection({ content, settings }) {
   if (!content) return null
 
   const {
@@ -50,6 +51,11 @@ export function HeroSection({ content }) {
     asciiRevealOriginX,
     asciiRevealOriginY,
     parallaxIntensity,
+    parallaxMedia,
+    mobileImage,
+    scrollText,
+    showScrollText,
+    useWatermark,
   } = content
 
   if (variant === 'textOnly') {
@@ -57,6 +63,7 @@ export function HeroSection({ content }) {
       <section
         data-theme={theme}
         data-page-builder-section="heroSection"
+        data-selector={settings?.customSelector}
         className={cx(
           'relative bg-background',
           TEXT_ONLY_PT[paddingTop] ?? TEXT_ONLY_PT.xl,
@@ -73,6 +80,37 @@ export function HeroSection({ content }) {
     )
   }
 
+  // Parallax hero: full-bleed image/video that scrolls slower than the page, optional
+  // big scroll-in text ("BodyArmor") along the bottom. Same markup the reference renders.
+  if (variant === 'parallax') {
+    if (!parallaxMedia) return null
+
+    return (
+      <section
+        data-theme={theme}
+        data-page-builder-section="heroSection"
+        data-selector={settings?.customSelector}
+        className={cx(
+          'relative overflow-hidden bg-background',
+          PADDING_TOP[paddingTop] ?? PADDING_TOP.none,
+          PADDING_BOTTOM[paddingBottom] ?? PADDING_BOTTOM.none
+        )}
+      >
+        <HeroParallax
+          media={parallaxMedia}
+          mobileImage={mobileImage ?? undefined}
+          headline={headline?.text}
+          headlineLevel={headline?.level}
+          headlineDisplay={headlineDisplay}
+          subtext={subtext}
+          ctas={ctas}
+          scrollText={showScrollText === false ? undefined : scrollText ?? undefined}
+          useWatermark={useWatermark ?? undefined}
+        />
+      </section>
+    )
+  }
+
   const asciiSrc = asciiImageUrl ?? asciiOriginalImageUrl
   const showAscii = variant === 'ascii' && Boolean(asciiSrc)
 
@@ -80,6 +118,7 @@ export function HeroSection({ content }) {
     <section
       data-theme={theme}
       data-page-builder-section="heroSection"
+      data-selector={settings?.customSelector}
       className={cx(
         'relative min-h-svh overflow-hidden bg-background',
         PADDING_TOP[paddingTop] ?? PADDING_TOP.none,

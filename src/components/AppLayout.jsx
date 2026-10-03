@@ -5,7 +5,7 @@ import { SyncBodyTheme } from '@/components/shared/SyncBodyTheme'
 import { Preloader } from '@/components/layout/Preloader'
 import { PreloaderScrollLock } from '@/components/layout/PreloaderScrollLock'
 import { PageTransitionScrollLock } from '@/pageTransition/PageTransitionScrollLock';
-// import { ModalOverlay } from '@/components/ui/ModalOverlay';
+import { ModalOverlay } from '@/components/ui/ModalOverlay';
 import { LazyAnalytics } from '@/providers/LazyAnalytics';
 import { LazyCustomCursor } from '@/components/ui/LazyCustomCursor';
 import { FooterSlot } from '@/providers/FooterSlot'
@@ -60,6 +60,7 @@ export default async function AppLayout({ children }) {
 
         </LazyCustomCursor>
       </LazyAnalytics>
+      <ModalOverlay />
     </>
   );
 }

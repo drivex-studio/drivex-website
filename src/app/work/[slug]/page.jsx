@@ -2,6 +2,7 @@ import { notFound } from 'next/navigation'
 import { sanityFetch } from '@/libs/sanity/live'
 import { caseStudyByUriQuery } from '@/libs/sanity/queries/caseStudy'
 import { SectionRenderer } from '@/sections/SectionRenderer'
+import { NextProjectSection } from '@/sections/workpage/NextProjectSection'
 
 const toParams = (slug) => ({ uri: `/work/${slug}`, uriNoSlash: `work/${slug}`, slug })
 
@@ -31,5 +32,10 @@ export default async function CaseStudyPage({ params }) {
 
   if (!caseStudy) notFound()
 
-  return <SectionRenderer sections={caseStudy.pageBuilder?.sectionsArray} />
+  return (
+    <>
+      <SectionRenderer sections={caseStudy.pageBuilder?.sectionsArray} />
+      {caseStudy.nextProject?.uri && <NextProjectSection nextProject={caseStudy.nextProject} />}
+    </>
+  )
 }
