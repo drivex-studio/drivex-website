@@ -1,5 +1,5 @@
 import AppProviders from '@/app/providers';
-import './main.css';
+import './style.css';
 import AppLayout from '@/components/AppLayout';
 import Script from 'next/script';
 import localFont from 'next/font/local';
