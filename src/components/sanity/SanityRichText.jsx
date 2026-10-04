@@ -7,7 +7,7 @@ import { AnimatedText } from '@/components/animations/AnimatedText'
 import { InnerParallax } from '@/components/animations/InnerParallax'
 import { SanityMedia } from '@/components/sanity/SanityMedia'
 import { SanityLink } from '@/components/sanity/SanityLink'
-import styles from './SanityRichText.module.scss'
+import styles from '@/styles/SanityRichText.module.scss'
 
 function extractTextChildren(children) {
   return Children.toArray(children).map((child) =>

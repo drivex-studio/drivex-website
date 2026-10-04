@@ -1,20 +1,9 @@
-// SanityRichText.module.scss
+@use "@/styles/mixins" as *;
+@layer theme, base, components, utilities;
 
 $ease: cubic-bezier(0.625, 0.05, 0, 1);
-$lg: 1024px;
 
-@mixin lg {
-  @media (min-width: $lg) {
-    @content;
-  }
-}
-
-@mixin text($name) {
-  font-size: var(--text-#{$name});
-  line-height: var(--text-#{$name}--line-height);
-  letter-spacing: var(--text-#{$name}--letter-spacing);
-  font-weight: var(--text-#{$name}--font-weight);
-}
+@layer components {
 
 .root {
   display: flex;
@@ -90,7 +79,6 @@ $lg: 1024px;
       0 0 0 4px color-mix(in srgb, var(--color-brand) 50%, transparent);
   }
 
-
   &:is(:hover, :focus-visible) .line {
     &::before {
       transform-origin: right;
@@ -156,7 +144,6 @@ $lg: 1024px;
 .strong { font-weight: 700; }
 .italic { font-style: italic; }
 
-// ───────────── Media ─────────────
 .mediaBlock {
   display: flex;
   flex-direction: column;
@@ -173,4 +160,5 @@ $lg: 1024px;
   width: auto;
   height: 1em;
   vertical-align: middle;
+}
 }
