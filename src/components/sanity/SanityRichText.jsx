@@ -1,12 +1,13 @@
 import React, { Children, isValidElement } from 'react'
 import { cx } from '@/libs/utils/className'
-import { PortableText } from '@portabletext/react' 
-import { stegaClean } from '@sanity/client/stega' 
-import { AnimatedProse } from '@/components/animations/AnimatedProse' 
-import { AnimatedText } from '@/components/animations/AnimatedText' 
-import { InnerParallax } from '@/components/animations/InnerParallax' 
-import { SanityMedia } from '@/components/sanity/SanityMedia' 
-import { SanityLink } from '@/components/sanity/SanityLink' 
+import { PortableText } from '@portabletext/react'
+import { stegaClean } from '@sanity/client/stega'
+import { AnimatedProse } from '@/components/animations/AnimatedProse'
+import { AnimatedText } from '@/components/animations/AnimatedText'
+import { InnerParallax } from '@/components/animations/InnerParallax'
+import { SanityMedia } from '@/components/sanity/SanityMedia'
+import { SanityLink } from '@/components/sanity/SanityLink'
+import styles from './SanityRichText.module.scss'
 
 function extractTextChildren(children) {
   return Children.toArray(children).map((child) =>
@@ -23,10 +24,10 @@ function extractTextChildren(children) {
 
 function NumberList({ children }) {
   return (
-    <ol className="flex list-none flex-col gap-8 text-body">
+    <ol className={styles.numberList}>
       {extractTextChildren(children).map((text, i) => (
-        <li className="flex items-start gap-8" key={`list-${i}-${text}`}>
-          <span className="shrink-0 text-foreground-muted">{i + 1}.</span>
+        <li className={styles.item} key={`list-${i}-${text}`}>
+          <span className={styles.number}>{i + 1}.</span>
           <AnimatedText>{text}</AnimatedText>
         </li>
       ))}
@@ -36,13 +37,10 @@ function NumberList({ children }) {
 
 function BulletList({ children }) {
   return (
-    <ul className="flex list-none flex-col gap-8 text-body">
+    <ul className={styles.bulletList}>
       {extractTextChildren(children).map((text, i) => (
-        <li className="flex items-start gap-8" key={`list-${i}-${text}`}>
-          <span
-            className="mt-[0.5em] size-4 shrink-0 rounded-full bg-current"
-            aria-hidden="true"
-          />
+        <li className={styles.item} key={`list-${i}-${text}`}>
+          <span className={styles.bullet} aria-hidden="true" />
           <AnimatedText>{text}</AnimatedText>
         </li>
       ))}
@@ -52,7 +50,7 @@ function BulletList({ children }) {
 
 function Heading4({ children }) {
   return (
-    <h4 className="mt-8 text-h6 first:mt-0 lg:mt-16">
+    <h4 className={styles.h4}>
       <AnimatedText>{children}</AnimatedText>
     </h4>
   )
@@ -60,7 +58,7 @@ function Heading4({ children }) {
 
 function Heading3({ children }) {
   return (
-    <h3 className="mt-16 text-h5 first:mt-0 lg:mt-24">
+    <h3 className={styles.h3}>
       <AnimatedText>{children}</AnimatedText>
     </h3>
   )
@@ -68,7 +66,7 @@ function Heading3({ children }) {
 
 function Heading2({ children }) {
   return (
-    <h2 className="mt-24 text-h4 first:mt-0 lg:mt-32">
+    <h2 className={styles.h2}>
       <AnimatedText>{children}</AnimatedText>
     </h2>
   )
@@ -76,7 +74,7 @@ function Heading2({ children }) {
 
 function NormalText({ children }) {
   return (
-    <div className="text-body empty:hidden" data-paragraph={true}>
+    <div className={styles.paragraph} data-paragraph={true}>
       <AnimatedText>{children}</AnimatedText>
     </div>
   )
@@ -84,18 +82,9 @@ function NormalText({ children }) {
 
 function LinkField({ value, children }) {
   return (
-    <SanityLink
-      link={value}
-      className="group relative no-underline outline-none focus-visible:ring-2 focus-visible:ring-brand/50 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
-    >
+    <SanityLink link={value} className={styles.link}>
       {children}
-      <span
-        className="pointer-events-none absolute inset-x-0 -bottom-1"
-        aria-hidden="true"
-      >
-        <span className="absolute inset-x-0 top-0 h-px origin-left scale-x-100 bg-current transition-transform delay-300 duration-700 [transition-timing-function:cubic-bezier(0.625,0.05,0,1)] group-hover:origin-right group-hover:scale-x-0 group-hover:delay-0 group-focus-visible:origin-right group-focus-visible:scale-x-0 group-focus-visible:delay-0" />
-        <span className="absolute inset-x-0 top-0 h-px origin-right scale-x-0 bg-current transition-transform delay-0 duration-700 [transition-timing-function:cubic-bezier(0.625,0.05,0,1)] group-hover:origin-left group-hover:scale-x-100 group-hover:delay-300 group-focus-visible:origin-left group-focus-visible:scale-x-100 group-focus-visible:delay-300" />
-      </span>
+      <span className={styles.line} aria-hidden="true" />
     </SanityLink>
   )
 }
@@ -104,7 +93,7 @@ function HighlightColorField({ value, children }) {
   return (
     <span
       style={{ '--color-value': stegaClean(value.color) }}
-      className="bg-(--color-value) text-inherit"
+      className={styles.highlight}
     >
       {children}
     </span>
@@ -115,7 +104,7 @@ function TextColorField({ value, children }) {
   return (
     <span
       style={{ '--color-value': stegaClean(value.color) }}
-      className="bg-inherit text-(--color-value)"
+      className={styles.textColor}
     >
       {children}
     </span>
@@ -123,19 +112,19 @@ function TextColorField({ value, children }) {
 }
 
 function Superscript({ children }) {
-  return <sup className="text-[0.6em]">{children}</sup>
+  return <sup className={styles.sup}>{children}</sup>
 }
 
 function Underline({ children }) {
-  return <em className="not-italic underline underline-offset-2">{children}</em>
+  return <em className={styles.underline}>{children}</em>
 }
 
 function StrongText({ children }) {
-  return <strong className="font-bold">{children}</strong>
+  return <strong className={styles.strong}>{children}</strong>
 }
 
 function ItalicText({ children }) {
-  return <em className="italic">{children}</em>
+  return <em className={styles.italic}>{children}</em>
 }
 
 function MediaBlock({ value, className }) {
@@ -146,11 +135,11 @@ function MediaBlock({ value, className }) {
 
   return (
     <figure
-      className={cx('flex flex-col gap-16', className)}
+      className={cx(styles.mediaBlock, className)}
       data-rich-text-block="mediaBlock"
     >
       <InnerParallax overflow="60 lg:120" style={{ aspectRatio }}>
-        <SanityMedia media={media} className="size-full" />
+        <SanityMedia media={media} className={styles.media} />
       </InnerParallax>
       {caption && <figcaption>{caption}</figcaption>}
     </figure>
@@ -172,7 +161,7 @@ function InlineMediaField({ value }) {
         muted: true,
         playsInline: true,
       }}
-      className="inline-flex h-[1em] w-auto align-middle"
+      className={styles.inlineMedia}
     />
   )
 }
@@ -207,7 +196,7 @@ export function SanityRichText({ value, className }) {
   if (!value) return null
 
   return (
-    <AnimatedProse className={cx('flex flex-col gap-16', className)}>
+    <AnimatedProse className={cx(styles.root, className)}>
       <PortableText
         value={value}
         onMissingComponent={false}

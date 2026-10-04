@@ -31,7 +31,7 @@
 
     "@portabletext/react": "^8.0.0",
     "embla-carousel-react": "^8.6.0",
-
+    "scss": "^0.2.4",
     "clsx": "^2.1.1",
     
     "class-variance-authority": "^0.7.1",
